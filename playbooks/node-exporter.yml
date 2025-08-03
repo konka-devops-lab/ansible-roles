@@ -4,4 +4,4 @@
   become: true
 
   roles:
-    - ../roles/node_exporter
+    - ../roles/node-exporter

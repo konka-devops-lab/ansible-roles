@@ -31,7 +31,8 @@
     dest: "{{ prometheus_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/prometheus.yml"
     owner: "{{ prometheus_user }}"
     group: "{{ prometheus_user }}"
-
+  notify:
+    - restart prometheus
 - name: Create systemd service file
   template:
     src: prometheus.service.j2
