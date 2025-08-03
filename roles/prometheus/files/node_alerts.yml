@@ -1,0 +1,11 @@
+groups:
+  - name: node_exporter_alerts
+    rules:
+      - alert: NodeDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node is down"
+          description: "Instance {{ $labels.instance }} is not reachable"

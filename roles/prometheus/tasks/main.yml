@@ -48,3 +48,12 @@
     name: prometheus
     enabled: true
     state: started
+- name: Copy Prometheus alert rule file
+  copy:
+    src: node_alerts.yml
+    dest: "{{ prometheus_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/rules/node_alerts.yml"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_user }}"
+    mode: '0644'
+  notify: restart prometheus
+
