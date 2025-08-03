@@ -5,7 +5,7 @@ After=network-online.target
 
 [Service]
 User={{ grafana_user }}
-ExecStart={{ grafana_install_dir }}/grafana-enterprise-{{ grafana_version }}.linux-amd64/bin/grafana-server \
+ExecStart={{ grafana_install_dir }}/grafana-enterprise-{{ grafana_version }}.linux-amd64/grafana-server \
   --homepath={{ grafana_install_dir }}/grafana-enterprise-{{ grafana_version }}.linux-amd64 \
   --config={{ grafana_install_dir }}/grafana-enterprise-{{ grafana_version }}.linux-amd64/conf/defaults.ini
 Restart=on-failure
