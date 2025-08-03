@@ -31,6 +31,14 @@
     dest: /etc/systemd/system/grafana.service
     mode: '0644'
 
+- name: Set ownership of Grafana install directory
+  file:
+    path: "{{ grafana_install_dir }}/grafana-v{{ grafana_version }}"
+    state: directory
+    recurse: yes
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+
 - name: Reload systemd
   systemd:
     daemon_reload: true
