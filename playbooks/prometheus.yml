@@ -5,3 +5,4 @@
     - ../roles/common-packages
     - ../roles/prometheus
     - ../roles/node-exporter
+    - ../roles/alertmanager
