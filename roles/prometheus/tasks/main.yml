@@ -48,6 +48,15 @@
     name: prometheus
     enabled: true
     state: started
+
+- name: Create rules directory
+  file:
+    path: "{{ prometheus_install_dir }}/prometheus-{{ prometheus_version }}.linux-amd64/rules"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_user }}"
+    mode: '0755'
+
 - name: Copy Prometheus alert rule file
   copy:
     src: node_alerts.yml
