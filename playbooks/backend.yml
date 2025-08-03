@@ -1,0 +1,6 @@
+- name: Setup backend with common packages
+  hosts: backend
+  become: yes
+  roles:
+    - common-packages
+    - backend
