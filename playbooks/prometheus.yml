@@ -4,4 +4,4 @@
   roles:
     - ../roles/common-packages
     - ../roles/prometheus
-    - ../roles/node-exporter
+    - ../roles/node_exporter
