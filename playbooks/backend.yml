@@ -2,5 +2,5 @@
   hosts: backend
   become: yes
   roles:
-    - common-packages
-    - backend
+    - ../roles/common-packages
+    - ../roles/backend

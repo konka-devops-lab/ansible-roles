@@ -1,0 +1,6 @@
+- name: Install Prometheus on monitoring node
+  hosts: monitoring
+  become: true
+  roles:
+    - ../roles/common-packages
+    - ../roles/prometheus
