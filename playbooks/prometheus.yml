@@ -6,3 +6,4 @@
     - ../roles/prometheus
     - ../roles/node-exporter
     - ../roles/alertmanager
+    - ../roles/grafana

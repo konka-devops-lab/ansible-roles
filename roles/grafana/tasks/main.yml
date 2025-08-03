@@ -1,0 +1,42 @@
+- name: Create grafana user
+  user:
+    name: "{{ grafana_user }}"
+    shell: /sbin/nologin
+    system: yes
+    create_home: no
+
+- name: Create install directory
+  file:
+    path: "{{ grafana_install_dir }}"
+    state: directory
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_user }}"
+    mode: '0755'
+
+- name: Download Grafana Enterprise
+  get_url:
+    url: "{{ grafana_download_url }}"
+    dest: /tmp/grafana.tar.gz
+
+- name: Extract Grafana
+  unarchive:
+    src: /tmp/grafana.tar.gz
+    dest: "{{ grafana_install_dir }}"
+    remote_src: yes
+    creates: "{{ grafana_install_dir }}/grafana-enterprise-{{ grafana_version }}.linux-amd64"
+
+- name: Create systemd service for Grafana
+  template:
+    src: grafana.service.j2
+    dest: /etc/systemd/system/grafana.service
+    mode: '0644'
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start Grafana
+  systemd:
+    name: grafana
+    enabled: true
+    state: started
