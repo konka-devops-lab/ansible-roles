@@ -48,3 +48,33 @@
     name: grafana
     enabled: true
     state: started
+
+- name: Create Grafana dashboards directory
+  file:
+    path: /opt/grafana/dashboards
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+
+- name: Copy custom dashboard JSON
+  copy:
+    src: dashboards/
+    dest: /opt/grafana/dashboards/
+    owner: grafana
+    group: grafana
+    mode: '0644'
+
+- name: Copy Grafana dashboard provisioning config
+  template:
+    src: dashboard-provisioning.yml.j2
+    dest: "{{ grafana_install_dir }}/grafana-v{{ grafana_version }}/conf/provisioning/dashboards/dashboard.yml"
+    owner: grafana
+    group: grafana
+    mode: '0644'
+
+- name: Restart Grafana
+  systemd:
+    name: grafana
+    state: restarted
+    daemon_reload: yes
