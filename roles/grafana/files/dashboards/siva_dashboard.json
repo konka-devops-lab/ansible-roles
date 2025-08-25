@@ -15,7 +15,7 @@
     {
       "type": "gauge",
       "title": "CPU Usage",
-      "gridPos": { "x": 6, "y": 0, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
@@ -29,7 +29,7 @@
     {
       "type": "gauge",
       "title": "Memory Usage",
-      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "100 * (1 - (avg by(instance) (node_memory_MemAvailable_bytes) / avg by(instance) (node_memory_MemTotal_bytes)))",
@@ -43,7 +43,7 @@
     {
       "type": "gauge",
       "title": "Disk Usage",
-      "gridPos": { "x": 6, "y": 4, "w": 12, "h": 8 },
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
           "expr": "100 - (node_filesystem_free_bytes / node_filesystem_size_bytes * 100)",
