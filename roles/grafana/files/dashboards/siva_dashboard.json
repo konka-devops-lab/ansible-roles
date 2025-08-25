@@ -5,12 +5,31 @@
   "schemaVersion": 36,
   "version": 1,
   "refresh": "30s",
+  "templating": {
+    "list": [
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(node_cpu_seconds_total, instance)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "sort": 1
+      }
+    ]
+  },
   "panels": [
     {
       "type": "gauge",
       "title": "Up",
       "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
-      "targets": [{ "expr": "up", "refId": "A" }]
+      "targets": [
+        {
+          "expr": "up{instance=~\"$instance\"}",
+          "refId": "A"
+        }
+      ]
     },
     {
       "type": "gauge",
@@ -18,7 +37,7 @@
       "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{instance=~\"$instance\", mode=\"idle\"}[5m])) * 100)",
           "refId": "A"
         }
       ],
@@ -32,7 +51,7 @@
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "100 * (1 - (avg by(instance) (node_memory_MemAvailable_bytes) / avg by(instance) (node_memory_MemTotal_bytes)))",
+          "expr": "100 * (1 - (avg by(instance) (node_memory_MemAvailable_bytes{instance=~\"$instance\"}) / avg by(instance) (node_memory_MemTotal_bytes{instance=~\"$instance\"})))",
           "refId": "A"
         }
       ],
@@ -46,7 +65,7 @@
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "100 - (node_filesystem_free_bytes / node_filesystem_size_bytes * 100)",
+          "expr": "100 - (node_filesystem_free_bytes{instance=~\"$instance\",fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{instance=~\"$instance\",fstype!~\"tmpfs|overlay\"} * 100)",
           "refId": "A"
         }
       ],
