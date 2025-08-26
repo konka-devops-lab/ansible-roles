@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: KONKA SIVARAMAKRISHNA
+  description: Ansible role to setup backend service
+  company: VAAYUJA INFO SOLUTIONS PVT LTD
+  license: MIT
+dependencies: []

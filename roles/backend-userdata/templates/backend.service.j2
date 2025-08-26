@@ -1,0 +1,16 @@
+[Unit]
+Description=Backend Service
+
+[Service]
+User={{ service_user }}
+Environment="DB_HOST={{ db_host }}"
+Environment="DB_USER={{ db_user }}"
+Environment="DB_PASSWORD={{ db_password }}"
+Environment="DB_NAME={{ db_name }}"
+Environment="REDIS_HOST={{ redis_host }}"
+ExecStart=/usr/bin/node {{ app_dir }}/server.js
+SyslogIdentifier=backend
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
