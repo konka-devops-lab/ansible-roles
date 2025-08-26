@@ -1,14 +1,6 @@
 groups:
 - name: node_alerts
   rules:
-  - alert: NodeDown
-    expr: up == 0
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Node is down"
-      description: "Instance {{ $labels.instance }} is not reachable"
   - alert: InstanceDown
     expr: up{job="ec2-instances"} == 0
     for: 5m
