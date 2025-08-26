@@ -78,3 +78,18 @@
     name: grafana
     state: restarted
     daemon_reload: yes
+- name: Create Grafana datasource directory
+  file:
+    path: /etc/grafana/provisioning/datasources
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+
+- name: Add Prometheus as default datasource
+  template:
+    src: prometheus-datasource.yml.j2
+    dest: /etc/grafana/provisioning/datasources/prometheus.yml
+    owner: grafana
+    group: grafana
+    mode: '0644'
