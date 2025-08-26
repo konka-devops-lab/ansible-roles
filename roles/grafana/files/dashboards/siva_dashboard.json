@@ -1,214 +1,177 @@
 {
   "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
+    "list": []
   },
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1652897765472,
-  "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "lineWidth": 1,
-            "pointSize": 2
+      "type": "row",
+      "title": "Instance Status",
+      "collapsed": false,
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "Instance UP Status",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+          "targets": [
+            {
+              "expr": "up{asg_name=~\"$asg\", instance=~\"$instance\"}",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "none",
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": 0 },
+                  { "color": "green", "value": 1 }
+                ]
+              }
+            }
           }
         }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "targets": [
-        {
-          "expr": "avg by (instance_id, node_ip) (rate(node_cpu_seconds_total{mode!=\"idle\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])) * 100",
-          "legendFormat": "{{instance_id}} ({{node_ip}})",
-          "refId": "A"
-        }
-      ],
-      "title": "CPU Usage (%)",
-      "type": "timeseries"
+      ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {}
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        }
-      },
-      "targets": [
+      "type": "row",
+      "title": "CPU Usage",
+      "collapsed": false,
+      "panels": [
         {
-          "expr": "(node_memory_MemTotal_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"} - node_memory_MemAvailable_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}) / node_memory_MemTotal_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"} * 100",
-          "legendFormat": "{{instance_id}} ({{node_ip}})",
-          "refId": "A"
+          "type": "timeseries",
+          "title": "CPU Usage (%)",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "targets": [
+            {
+              "expr": "100 - (avg by (instance_id, node_ip) (irate(node_cpu_seconds_total{mode=\"idle\", asg_name=~\"$asg\", instance=~\"$instance\"}[5m])) * 100)",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "color": {
+                "mode": "continuous"
+              }
+            }
+          }
         }
-      ],
-      "title": "Memory Usage (%)",
-      "type": "timeseries"
+      ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 3,
-      "targets": [
+      "type": "row",
+      "title": "Memory Usage",
+      "collapsed": false,
+      "panels": [
         {
-          "expr": "100 - (node_filesystem_free_bytes{fstype!=\"tmpfs\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"} * 100)",
-          "legendFormat": "{{instance_id}} ({{node_ip}})",
-          "refId": "A"
+          "type": "timeseries",
+          "title": "Memory Usage (%)",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+          "targets": [
+            {
+              "expr": "(1 - (node_memory_MemAvailable_bytes{asg_name=~\"$asg\", instance=~\"$instance\"} / node_memory_MemTotal_bytes{asg_name=~\"$asg\", instance=~\"$instance\"})) * 100",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "color": {
+                "mode": "continuous"
+              }
+            }
+          }
         }
-      ],
-      "title": "Disk Usage (%)",
-      "type": "timeseries"
+      ]
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 4,
-      "targets": [
+      "type": "row",
+      "title": "Disk Usage",
+      "collapsed": false,
+      "panels": [
         {
-          "expr": "rate(node_network_receive_bytes_total{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])",
-          "legendFormat": "RX {{instance_id}} ({{node_ip}})",
-          "refId": "A"
+          "type": "timeseries",
+          "title": "Disk Usage (%)",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+          "targets": [
+            {
+              "expr": "(node_filesystem_size_bytes{fstype!=\"rootfs\", asg_name=~\"$asg\", instance=~\"$instance\"} - node_filesystem_free_bytes{fstype!=\"rootfs\", asg_name=~\"$asg\", instance=~\"$instance\"}) / node_filesystem_size_bytes{fstype!=\"rootfs\", asg_name=~\"$asg\", instance=~\"$instance\"} * 100",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "color": {
+                "mode": "continuous"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Network Traffic",
+      "collapsed": false,
+      "panels": [
+        {
+          "type": "timeseries",
+          "title": "Network In (bytes/sec)",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+          "targets": [
+            {
+              "expr": "irate(node_network_receive_bytes_total{device!~\"lo\", asg_name=~\"$asg\", instance=~\"$instance\"}[5m])",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ]
         },
         {
-          "expr": "rate(node_network_transmit_bytes_total{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])",
-          "legendFormat": "TX {{instance_id}} ({{node_ip}})",
-          "refId": "B"
+          "type": "timeseries",
+          "title": "Network Out (bytes/sec)",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+          "targets": [
+            {
+              "expr": "irate(node_network_transmit_bytes_total{device!~\"lo\", asg_name=~\"$asg\", instance=~\"$instance\"}[5m])",
+              "legendFormat": "{{instance_id}} - {{node_ip}}",
+              "refId": "A"
+            }
+          ]
         }
-      ],
-      "title": "Network Traffic (bytes/sec)",
-      "type": "timeseries"
+      ]
     }
-  ],
-  "schemaVersion": 36,
-  "style": "dark",
-  "tags": [
-    "aws",
-    "asg",
-    "ec2",
-    "node-exporter"
   ],
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": ".*"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "label_values(asg_name)",
-        "hide": 0,
-        "includeAll": true,
-        "multi": false,
-        "name": "asg_name",
-        "options": [],
-        "query": {
-          "query": "label_values(asg_name)",
-          "refId": "Prometheus-asg_name-Variable-Query"
-        },
-        "refresh": 2,
-        "sort": 1,
-        "type": "query"
+        "name": "asg",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(asg_name)",
+        "refresh": 1
       },
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": ".*"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "definition": "label_values(node_exporter_build_info{asg_name=\"$asg_name\"}, instance_id)",
-        "hide": 0,
-        "includeAll": true,
-        "multi": false,
-        "name": "instance_id",
-        "options": [],
-        "query": {
-          "query": "label_values(node_exporter_build_info{asg_name=\"$asg_name\"}, instance_id)",
-          "refId": "Prometheus-instance_id-Variable-Query"
-        },
-        "refresh": 2,
-        "sort": 1,
-        "type": "query"
+        "name": "instance",
+        "type": "query",
+        "datasource": "Prometheus",
+        "query": "label_values(instance)",
+        "refresh": 1
       }
     ]
   },
-  "time": {
-    "from": "now-15m",
-    "to": "now"
-  },
-  "timezone": "",
-  "title": "ASG Based EC2 Monitoring",
-  "uid": "asg-monitor-dashboard",
+  "title": "EC2 ASG Dashboard",
+  "uid": "asg-monitor",
   "version": 1
 }
