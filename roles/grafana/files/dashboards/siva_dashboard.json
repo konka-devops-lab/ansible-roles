@@ -1,154 +1,135 @@
 {
-  "id": null,
-  "title": "Server Monitoring",
-  "timezone": "browser",
-  "schemaVersion": 36,
-  "version": 1,
-  "refresh": "30s",
-  "templating": {
+  "annotations": {
     "list": [
       {
-        "name": "instance",
-        "type": "query",
-        "datasource": "Prometheus",
-        "query": "label_values(node_cpu_seconds_total, instance)",
-        "refresh": 1,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": true,
-        "sort": 1
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
       }
     ]
   },
   "panels": [
     {
-      "type": "gauge",
-      "title": "Up",
-      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 6 },
+      "type": "stat",
+      "title": "Instance Status",
       "targets": [
         {
-          "expr": "up{instance=~\"${instance:regex}\"}",
-          "refId": "A"
+          "expr": "up",
+          "legendFormat": "{{instance}}"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "red", "value": 0 },
-              { "color": "green", "value": 1 }
-            ]
-          }
-        }
-      }
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"]
+        },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none"
+      },
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
     },
     {
       "type": "gauge",
       "title": "CPU Usage (%)",
-      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\",instance=~\"${instance:regex}\"}[5m])) * 100)",
-          "refId": "A"
+          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "legendFormat": "{{instance}}"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": 0 },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"]
+        },
+        "orientation": "auto",
+        "min": 0,
+        "max": 100,
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "orange", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]
         }
-      }
+      },
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
     },
     {
       "type": "gauge",
       "title": "Memory Usage (%)",
-      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{instance=~\"${instance:regex}\"} / node_memory_MemTotal_bytes{instance=~\"${instance:regex}\"}))",
-          "refId": "A"
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "{{instance}}"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": 0 },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"]
+        },
+        "orientation": "auto",
+        "min": 0,
+        "max": 100,
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "orange", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]
         }
-      }
+      },
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 }
     },
     {
       "type": "gauge",
       "title": "Disk Usage (%)",
-      "gridPos": { "x": 0, "y": 6, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 * (1 - (node_filesystem_free_bytes{fstype!~\"tmpfs|overlay\",instance=~\"${instance:regex}\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\",instance=~\"${instance:regex}\"}))",
-          "refId": "A"
+          "expr": "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\"})) * 100",
+          "legendFormat": "{{instance}}"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": 0 },
-              { "color": "yellow", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
+      "options": {
+        "reduceOptions": {
+          "calcs": ["lastNotNull"]
+        },
+        "orientation": "auto",
+        "min": 0,
+        "max": 100,
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "orange", "value": 70 },
+            { "color": "red", "value": 90 }
+          ]
         }
-      }
+      },
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 }
     },
     {
-      "type": "graph",
-      "title": "Network In (Receive)",
-      "gridPos": { "x": 8, "y": 6, "w": 8, "h": 6 },
+      "type": "timeseries",
+      "title": "Network Traffic (In & Out)",
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total{instance=~\"${instance:regex}\",device!=\"lo\"}[5m])",
-          "legendFormat": "{{instance}} RX",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps"
-        }
-      }
-    },
-    {
-      "type": "graph",
-      "title": "Network Out (Transmit)",
-      "gridPos": { "x": 16, "y": 6, "w": 8, "h": 6 },
-      "targets": [
+          "expr": "irate(node_network_receive_bytes_total[5m])",
+          "legendFormat": "{{instance}} - In"
+        },
         {
-          "expr": "rate(node_network_transmit_bytes_total{instance=~\"${instance:regex}\",device!=\"lo\"}[5m])",
-          "legendFormat": "{{instance}} TX",
-          "refId": "A"
+          "expr": "irate(node_network_transmit_bytes_total[5m])",
+          "legendFormat": "{{instance}} - Out"
         }
       ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps"
-        }
-      }
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
     }
-  ]
+  ],
+  "schemaVersion": 27,
+  "version": 1,
+  "title": "Server Monitoring Dashboard"
 }
