@@ -1,0 +1,5 @@
+---
+# Frontend
+frontend_repo: "https://github.com/sivaramakrishna-konka/3-tier-vm-frontend.git"
+frontend_tmp_dir: "/tmp/frontend-app"
+nginx_html_dir: "/usr/share/nginx/html"

@@ -1,0 +1,55 @@
+---
+- name: Install Nginx, Git and curl
+  package:
+    name:
+      - nginx
+      - git
+      - curl
+    state: present
+
+- name: Setup Node.js 20 repository
+  shell: curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+  args:
+    executable: /bin/bash
+
+- name: Install Node.js
+  package:
+    name: nodejs
+    state: present
+
+- name: Enable and start Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Clear existing Nginx HTML folder
+  file:
+    path: "{{ nginx_html_dir }}"
+    state: directory
+    recurse: yes
+
+- name: Clone frontend repository
+  git:
+    repo: "{{ frontend_repo }}"
+    dest: "{{ frontend_tmp_dir }}"
+    force: yes
+
+- name: Install frontend dependencies
+  npm:
+    path: "{{ frontend_tmp_dir }}"
+    state: present
+
+- name: Build frontend
+  npm:
+    path: "{{ frontend_tmp_dir }}"
+    build: yes
+
+- name: Copy built frontend to Nginx folder
+  copy:
+    src: "{{ frontend_tmp_dir }}/dist/"
+    dest: "{{ nginx_html_dir }}/"
+    owner: nginx
+    group: nginx
+    mode: '0755'
+    remote_src: yes
