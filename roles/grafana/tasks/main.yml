@@ -73,11 +73,6 @@
     group: grafana
     mode: '0644'
 
-- name: Restart Grafana
-  systemd:
-    name: grafana
-    state: restarted
-    daemon_reload: yes
 - name: Create Grafana datasource directory
   file:
     path: /etc/grafana/provisioning/datasources
@@ -93,3 +88,9 @@
     owner: grafana
     group: grafana
     mode: '0644'
+
+- name: Restart Grafana
+  systemd:
+    name: grafana
+    state: restarted
+    daemon_reload: yes
