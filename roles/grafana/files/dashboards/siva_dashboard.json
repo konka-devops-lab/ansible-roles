@@ -12,14 +12,42 @@
       }
     ]
   },
+  "templating": {
+    "list": [
+      {
+        "name": "asg",
+        "type": "query",
+        "datasource": "Prometheus",
+        "refresh": 1,
+        "query": "label_values(asg_name)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": false,
+        "sort": 1,
+        "label": "ASG"
+      },
+      {
+        "name": "instance",
+        "type": "query",
+        "datasource": "Prometheus",
+        "refresh": 1,
+        "query": "label_values(node_exporter_build_info{asg_name=~\"$asg\"}, instance)",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "sort": 1,
+        "label": "Instance"
+      }
+    ]
+  },
   "panels": [
     {
       "type": "stat",
       "title": "Instance Status",
       "targets": [
         {
-          "expr": "up",
-          "legendFormat": "{{instance}}"
+          "expr": "up{asg_name=~\"$asg\", instance=~\"$instance\"}",
+          "legendFormat": "{{node_name}} ({{node_ip}})"
         }
       ],
       "options": {
@@ -30,15 +58,15 @@
         "colorMode": "value",
         "graphMode": "none"
       },
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 6 }
     },
     {
       "type": "gauge",
       "title": "CPU Usage (%)",
       "targets": [
         {
-          "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-          "legendFormat": "{{instance}}"
+          "expr": "100 - (avg by(instance,node_name,node_ip) (irate(node_cpu_seconds_total{mode=\"idle\",asg_name=~\"$asg\",instance=~\"$instance\"}[5m])) * 100)",
+          "legendFormat": "{{node_name}} ({{node_ip}})"
         }
       ],
       "options": {
@@ -57,15 +85,15 @@
           ]
         }
       },
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 }
     },
     {
       "type": "gauge",
       "title": "Memory Usage (%)",
       "targets": [
         {
-          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
-          "legendFormat": "{{instance}}"
+          "expr": "(1 - (node_memory_MemAvailable_bytes{asg_name=~\"$asg\",instance=~\"$instance\"} / node_memory_MemTotal_bytes{asg_name=~\"$asg\",instance=~\"$instance\"})) * 100",
+          "legendFormat": "{{node_name}} ({{node_ip}})"
         }
       ],
       "options": {
@@ -84,15 +112,15 @@
           ]
         }
       },
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 }
     },
     {
       "type": "gauge",
       "title": "Disk Usage (%)",
       "targets": [
         {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\"})) * 100",
-          "legendFormat": "{{instance}}"
+          "expr": "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\",asg_name=~\"$asg\",instance=~\"$instance\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",asg_name=~\"$asg\",instance=~\"$instance\"})) * 100",
+          "legendFormat": "{{node_name}} ({{node_ip}})"
         }
       ],
       "options": {
@@ -111,25 +139,25 @@
           ]
         }
       },
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 8 }
     },
     {
       "type": "timeseries",
       "title": "Network Traffic (In & Out)",
       "targets": [
         {
-          "expr": "irate(node_network_receive_bytes_total[5m])",
-          "legendFormat": "{{instance}} - In"
+          "expr": "irate(node_network_receive_bytes_total{asg_name=~\"$asg\",instance=~\"$instance\",device!=\"lo\"}[5m])",
+          "legendFormat": "{{node_name}} ({{node_ip}}) - In"
         },
         {
-          "expr": "irate(node_network_transmit_bytes_total[5m])",
-          "legendFormat": "{{instance}} - Out"
+          "expr": "irate(node_network_transmit_bytes_total{asg_name=~\"$asg\",instance=~\"$instance\",device!=\"lo\"}[5m])",
+          "legendFormat": "{{node_name}} ({{node_ip}}) - Out"
         }
       ],
-      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 8 }
     }
   ],
   "schemaVersion": 27,
-  "version": 1,
+  "version": 2,
   "title": "Server Monitoring Dashboard"
 }
