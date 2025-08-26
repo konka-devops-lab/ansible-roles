@@ -30,7 +30,7 @@
         "colorMode": "value",
         "graphMode": "none"
       },
-      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
     },
     {
       "type": "gauge",
@@ -57,7 +57,7 @@
           ]
         }
       },
-      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
     },
     {
       "type": "gauge",
@@ -84,7 +84,7 @@
           ]
         }
       },
-      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 }
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
     },
     {
       "type": "gauge",
@@ -111,7 +111,7 @@
           ]
         }
       },
-      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 }
+      "gridPos": { "x": 0, "y": 4, "w": 24, "h": 8 }
     },
     {
       "type": "timeseries",

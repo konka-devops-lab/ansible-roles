@@ -35,3 +35,12 @@ groups:
     annotations:
       summary: "High Memory usage on {{ $labels.instance_id }}"
       description: "Memory usage is above 85% for 10 minutes on {{ $labels.node_name }}"
+  
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{fstype!="tmpfs",fstype!="overlay"} - node_filesystem_free_bytes{fstype!="tmpfs",fstype!="overlay"}) / node_filesystem_size_bytes{fstype!="tmpfs",fstype!="overlay"} * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Disk Usage on {{ $labels.instance }}"
+      description: "Disk usage is above 80% (Current value: {{ $value }}%) on instance {{ $labels.instance }} for mountpoint {{ $labels.mountpoint }}."
