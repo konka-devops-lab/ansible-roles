@@ -24,7 +24,7 @@
     {
       "type": "gauge",
       "title": "Up",
-      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
           "expr": "up{instance=~\"${instance:regex}\"}",
@@ -46,11 +46,11 @@
     },
     {
       "type": "gauge",
-      "title": "CPU Usage",
-      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "title": "CPU Usage (%)",
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\", instance=~\"${instance:regex}\"}[5m])) * 100)",
+          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\",instance=~\"${instance:regex}\"}[5m])) * 100)",
           "refId": "A"
         }
       ],
@@ -70,11 +70,11 @@
     },
     {
       "type": "gauge",
-      "title": "Memory Usage",
-      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "title": "Memory Usage (%)",
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 * (1 - (avg by(instance) (node_memory_MemAvailable_bytes{instance=~\"${instance:regex}\"}) / avg by(instance) (node_memory_MemTotal_bytes{instance=~\"${instance:regex}\"})))",
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes{instance=~\"${instance:regex}\"} / node_memory_MemTotal_bytes{instance=~\"${instance:regex}\"}))",
           "refId": "A"
         }
       ],
@@ -94,11 +94,11 @@
     },
     {
       "type": "gauge",
-      "title": "Disk Usage",
-      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "title": "Disk Usage (%)",
+      "gridPos": { "x": 0, "y": 6, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "100 - (node_filesystem_free_bytes{instance=~\"${instance:regex}\",fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{instance=~\"${instance:regex}\",fstype!~\"tmpfs|overlay\"} * 100)",
+          "expr": "100 * (1 - (node_filesystem_free_bytes{fstype!~\"tmpfs|overlay\",instance=~\"${instance:regex}\"} / node_filesystem_size_bytes{fstype!~\"tmpfs|overlay\",instance=~\"${instance:regex}\"}))",
           "refId": "A"
         }
       ],
@@ -113,6 +113,40 @@
               { "color": "red", "value": 90 }
             ]
           }
+        }
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Network In (Receive)",
+      "gridPos": { "x": 8, "y": 6, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{instance=~\"${instance:regex}\",device!=\"lo\"}[5m])",
+          "legendFormat": "{{instance}} RX",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        }
+      }
+    },
+    {
+      "type": "graph",
+      "title": "Network Out (Transmit)",
+      "gridPos": { "x": 16, "y": 6, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(node_network_transmit_bytes_total{instance=~\"${instance:regex}\",device!=\"lo\"}[5m])",
+          "legendFormat": "{{instance}} TX",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
         }
       }
     }
