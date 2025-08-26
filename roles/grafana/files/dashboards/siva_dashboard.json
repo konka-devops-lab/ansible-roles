@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -12,152 +15,200 @@
       }
     ]
   },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1652897765472,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "lineWidth": 1,
+            "pointSize": 2
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "expr": "avg by (instance_id, node_ip) (rate(node_cpu_seconds_total{mode!=\"idle\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])) * 100",
+          "legendFormat": "{{instance_id}} ({{node_ip}})",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Usage (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {}
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "expr": "(node_memory_MemTotal_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"} - node_memory_MemAvailable_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}) / node_memory_MemTotal_bytes{asg_name=\"$asg_name\",instance_id=\"$instance_id\"} * 100",
+          "legendFormat": "{{instance_id}} ({{node_ip}})",
+          "refId": "A"
+        }
+      ],
+      "title": "Memory Usage (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "100 - (node_filesystem_free_bytes{fstype!=\"tmpfs\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",asg_name=\"$asg_name\",instance_id=\"$instance_id\"} * 100)",
+          "legendFormat": "{{instance_id}} ({{node_ip}})",
+          "refId": "A"
+        }
+      ],
+      "title": "Disk Usage (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])",
+          "legendFormat": "RX {{instance_id}} ({{node_ip}})",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total{asg_name=\"$asg_name\",instance_id=\"$instance_id\"}[5m])",
+          "legendFormat": "TX {{instance_id}} ({{node_ip}})",
+          "refId": "B"
+        }
+      ],
+      "title": "Network Traffic (bytes/sec)",
+      "type": "timeseries"
+    }
+  ],
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [
+    "aws",
+    "asg",
+    "ec2",
+    "node-exporter"
+  ],
   "templating": {
     "list": [
       {
-        "name": "asg",
-        "type": "query",
-        "datasource": "Prometheus",
-        "refresh": 1,
-        "query": "label_values(asg_name)",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(asg_name)",
+        "hide": 0,
         "includeAll": true,
-        "allValue": ".*",
         "multi": false,
+        "name": "asg_name",
+        "options": [],
+        "query": {
+          "query": "label_values(asg_name)",
+          "refId": "Prometheus-asg_name-Variable-Query"
+        },
+        "refresh": 2,
         "sort": 1,
-        "label": "ASG"
+        "type": "query"
       },
       {
-        "name": "instance",
-        "type": "query",
-        "datasource": "Prometheus",
-        "refresh": 1,
-        "query": "label_values(node_exporter_build_info{asg_name=~\"$asg\"}, instance)",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": ".*"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus"
+        },
+        "definition": "label_values(node_exporter_build_info{asg_name=\"$asg_name\"}, instance_id)",
+        "hide": 0,
         "includeAll": true,
-        "allValue": ".*",
-        "multi": true,
+        "multi": false,
+        "name": "instance_id",
+        "options": [],
+        "query": {
+          "query": "label_values(node_exporter_build_info{asg_name=\"$asg_name\"}, instance_id)",
+          "refId": "Prometheus-instance_id-Variable-Query"
+        },
+        "refresh": 2,
         "sort": 1,
-        "label": "Instance"
+        "type": "query"
       }
     ]
   },
-  "panels": [
-    {
-      "type": "stat",
-      "title": "Instance Status",
-      "targets": [
-        {
-          "expr": "up{asg_name=~\"$asg\", instance=~\"$instance\"}",
-          "legendFormat": "{{node_name}} ({{node_ip}})"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"]
-        },
-        "orientation": "auto",
-        "colorMode": "value",
-        "graphMode": "none"
-      },
-      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 6 }
-    },
-    {
-      "type": "gauge",
-      "title": "CPU Usage (%)",
-      "targets": [
-        {
-          "expr": "100 - (avg by(instance,node_name,node_ip) (irate(node_cpu_seconds_total{mode=\"idle\",asg_name=~\"$asg\",instance=~\"$instance\"}[5m])) * 100)",
-          "legendFormat": "{{node_name}} ({{node_ip}})"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"]
-        },
-        "orientation": "auto",
-        "min": 0,
-        "max": 100,
-        "thresholds": {
-          "mode": "absolute",
-          "steps": [
-            { "color": "green", "value": 0 },
-            { "color": "orange", "value": 70 },
-            { "color": "red", "value": 90 }
-          ]
-        }
-      },
-      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 }
-    },
-    {
-      "type": "gauge",
-      "title": "Memory Usage (%)",
-      "targets": [
-        {
-          "expr": "(1 - (node_memory_MemAvailable_bytes{asg_name=~\"$asg\",instance=~\"$instance\"} / node_memory_MemTotal_bytes{asg_name=~\"$asg\",instance=~\"$instance\"})) * 100",
-          "legendFormat": "{{node_name}} ({{node_ip}})"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"]
-        },
-        "orientation": "auto",
-        "min": 0,
-        "max": 100,
-        "thresholds": {
-          "mode": "absolute",
-          "steps": [
-            { "color": "green", "value": 0 },
-            { "color": "orange", "value": 70 },
-            { "color": "red", "value": 90 }
-          ]
-        }
-      },
-      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 }
-    },
-    {
-      "type": "gauge",
-      "title": "Disk Usage (%)",
-      "targets": [
-        {
-          "expr": "(1 - (node_filesystem_avail_bytes{fstype!=\"tmpfs\",asg_name=~\"$asg\",instance=~\"$instance\"} / node_filesystem_size_bytes{fstype!=\"tmpfs\",asg_name=~\"$asg\",instance=~\"$instance\"})) * 100",
-          "legendFormat": "{{node_name}} ({{node_ip}})"
-        }
-      ],
-      "options": {
-        "reduceOptions": {
-          "calcs": ["lastNotNull"]
-        },
-        "orientation": "auto",
-        "min": 0,
-        "max": 100,
-        "thresholds": {
-          "mode": "absolute",
-          "steps": [
-            { "color": "green", "value": 0 },
-            { "color": "orange", "value": 70 },
-            { "color": "red", "value": 90 }
-          ]
-        }
-      },
-      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 8 }
-    },
-    {
-      "type": "timeseries",
-      "title": "Network Traffic (In & Out)",
-      "targets": [
-        {
-          "expr": "irate(node_network_receive_bytes_total{asg_name=~\"$asg\",instance=~\"$instance\",device!=\"lo\"}[5m])",
-          "legendFormat": "{{node_name}} ({{node_ip}}) - In"
-        },
-        {
-          "expr": "irate(node_network_transmit_bytes_total{asg_name=~\"$asg\",instance=~\"$instance\",device!=\"lo\"}[5m])",
-          "legendFormat": "{{node_name}} ({{node_ip}}) - Out"
-        }
-      ],
-      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 8 }
-    }
-  ],
-  "schemaVersion": 27,
-  "version": 2,
-  "title": "Server Monitoring Dashboard"
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timezone": "",
+  "title": "ASG Based EC2 Monitoring",
+  "uid": "asg-monitor-dashboard",
+  "version": 1
 }
