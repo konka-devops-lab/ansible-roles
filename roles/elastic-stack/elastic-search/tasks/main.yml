@@ -9,7 +9,7 @@
     dest: /etc/yum.repos.d/elasticsearch.repo
     content: |
       [elasticsearch]
-      name=Elasticsearch repository for 9.x packages
+      name=Elasticsearch repository for 8.x packages
       baseurl={{ elastic_repo_url }}
       gpgcheck=1
       gpgkey={{ elastic_gpg_key }}
@@ -29,6 +29,31 @@
     owner: root
     group: root
     mode: '0644'
+  notify: restart elasticsearch
+
+- name: Ensure correct permissions for Elasticsearch data and logs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: '0755'
+  loop:
+    - /var/lib/elasticsearch
+    - /var/log/elasticsearch
+
+- name: Set JVM Heap Size (Xms)
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xms'
+    line: "-Xms{{ elastic_heap_size }}"
+  notify: restart elasticsearch
+
+- name: Set JVM Heap Size (Xmx)
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: '^-Xmx'
+    line: "-Xmx{{ elastic_heap_size }}"
   notify: restart elasticsearch
 
 - name: Enable and start Elasticsearch service

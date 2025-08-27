@@ -1,10 +1,10 @@
 ---
-# Default variables for Elasticsearch installation
-
-elastic_repo_url: "https://artifacts.elastic.co/packages/9.x/yum"
+elastic_repo_url: "https://artifacts.elastic.co/packages/8.x/yum"
 elastic_gpg_key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
 elastic_version: latest
 
 elastic_http_port: 9200
 elastic_network_host: "0.0.0.0"
 elastic_discovery_type: "single-node"
+
+elastic_heap_size: "1g"   # JVM heap size
