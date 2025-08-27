@@ -1,10 +1,19 @@
 ---
+# Elasticsearch repository configuration
 elastic_repo_url: "https://artifacts.elastic.co/packages/8.x/yum"
 elastic_gpg_key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
-elastic_version: latest
+elastic_version: "9.1.3"  # Changed from 'latest' to specific version
 
+# Elasticsearch configuration
 elastic_http_port: 9200
 elastic_network_host: "0.0.0.0"
 elastic_discovery_type: "single-node"
+elastic_cluster_name: "my-elastic-cluster"
 
-elastic_heap_size: "1g"   # JVM heap size
+# JVM configuration
+elastic_heap_size: "2g"   # Increased from 1g to 2g
+elastic_jvm_options: "/etc/elasticsearch/jvm.options.d/jvm.options"
+
+# System configuration
+elastic_user: "elasticsearch"
+elastic_group: "elasticsearch"

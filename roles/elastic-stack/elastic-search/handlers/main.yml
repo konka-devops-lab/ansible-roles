@@ -3,3 +3,18 @@
   systemd:
     name: elasticsearch
     state: restarted
+    daemon_reload: yes
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: stop elasticsearch
+  systemd:
+    name: elasticsearch
+    state: stopped
+
+- name: start elasticsearch
+  systemd:
+    name: elasticsearch
+    state: started

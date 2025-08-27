@@ -1,4 +1,39 @@
-# Elasticsearch configuration
-http.port: {{ elastic_http_port }}
+# Cluster and node configuration
+cluster.name: {{ elastic_cluster_name }}
+node.name: {{ inventory_hostname }}
+
+# Paths
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+# Network configuration
 network.host: {{ elastic_network_host }}
+http.port: {{ elastic_http_port }}
+
+# Discovery configuration
 discovery.type: {{ elastic_discovery_type }}
+discovery.seed_hosts: ["127.0.0.1", "::1"]
+
+# Bootstrap configuration
+bootstrap.memory_lock: true
+
+# Security configuration (disabled for development)
+xpack.security.enabled: false
+xpack.security.transport.ssl.enabled: false
+xpack.security.http.ssl.enabled: false
+
+# License configuration
+xpack.license.self_generated.type: basic
+
+# Monitoring configuration
+xpack.monitoring.collection.enabled: true
+
+# Performance settings
+indices.query.bool.max_clause_count: 8192
+
+# Thread pools optimization
+thread_pool.write.queue_size: 1000
+thread_pool.search.queue_size: 1000
+
+# Memory settings
+bootstrap.system_call_filter: false
