@@ -1,0 +1,4 @@
+- hosts: elk_server
+  become: yes
+  roles:
+    - role: ../roles/elastic-stack/elasticsearch
