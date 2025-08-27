@@ -1,4 +1,5 @@
-- hosts: elk_server
+- name: Elasticsearch Setup
+  hosts: localhost
   become: yes
   roles:
     - role: ../roles/elastic-stack/elastic-search
