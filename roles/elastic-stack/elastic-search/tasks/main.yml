@@ -31,7 +31,8 @@
     mode: '0644'
   notify: restart elasticsearch
 
-- name: Ensure correct permissions for Elasticsearch data and logs
+
+- name: Ensure Elasticsearch directories exist
   file:
     path: "{{ item }}"
     state: directory
@@ -39,8 +40,17 @@
     group: elasticsearch
     mode: '0755'
   loop:
-    - /var/lib/elasticsearch
+    - /usr/share/elasticsearch/logs
     - /var/log/elasticsearch
+    - /var/lib/elasticsearch
+
+- name: Fix permissions for Elasticsearch home
+  file:
+    path: /usr/share/elasticsearch
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    recurse: yes
 
 - name: Set JVM Heap Size (Xms)
   lineinfile:
