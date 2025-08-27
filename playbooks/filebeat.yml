@@ -2,5 +2,4 @@
   hosts: localhost
   become: yes
   roles:
-    - role: ../roles/elastic-stack/elastic-search
     - role: ../roles/elastic-stack/filebeat

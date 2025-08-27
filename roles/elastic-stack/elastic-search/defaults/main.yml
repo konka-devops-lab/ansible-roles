@@ -1,19 +1,21 @@
----
-# Elasticsearch repository configuration
-elastic_repo_url: "https://artifacts.elastic.co/packages/8.x/yum"
-elastic_gpg_key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
-elastic_version: "9.1.3"  # Changed from 'latest' to specific version
+elasticsearch_version: "9.x"
+elasticsearch_repo_url: "https://artifacts.elastic.co/packages/{{ elasticsearch_version }}/yum"
+elasticsearch_gpg_key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+elasticsearch_package: "elasticsearch"
+elasticsearch_service: "elasticsearch"
 
-# Elasticsearch configuration
-elastic_http_port: 9200
-elastic_network_host: "0.0.0.0"
-elastic_discovery_type: "single-node"
-elastic_cluster_name: "my-elastic-cluster"
 
-# JVM configuration
-elastic_heap_size: "2g"   # Increased from 1g to 2g
-elastic_jvm_options: "/etc/elasticsearch/jvm.options.d/jvm.options"
+kibana_config:
+  server_port: 5601
+  server_host: "0.0.0.0"
+  elasticsearch_hosts: ["http://localhost:9200"]
+  logging_file: "/var/log/kibana/kibana.log"
+  pid_file: "/run/kibana/kibana.pid"
 
-# System configuration
-elastic_user: "elasticsearch"
-elastic_group: "elasticsearch"
+logstash_repo_name: "logstash-9.x"
+logstash_repo_baseurl: "https://artifacts.elastic.co/packages/9.x/yum"
+logstash_repo_gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+logstash_conf_path: "/etc/logstash/conf.d/logstash.conf"
+logstash_service: "logstash"
+logstash_beats_port: 5044
+logstash_es_host: "http://localhost:9200"

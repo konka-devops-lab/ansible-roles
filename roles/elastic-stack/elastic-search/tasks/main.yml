@@ -1,174 +1,97 @@
 ---
-- name: Install required dependencies
-  yum:
-    name:
-      - curl
-      - wget
-      - gnupg
-    state: present
-
-- name: Install Java 17 (Amazon Corretto)
-  yum:
-    name: java-17-amazon-corretto-devel
-    state: present
-
-- name: Verify Java installation
-  command: java -version
-  register: java_version
-  changed_when: false
-  ignore_errors: yes
-
-- name: Display Java version
-  debug:
-    msg: "Java version: {{ java_version.stderr }}"
-
-- name: Add Elasticsearch YUM repo
-  copy:
+- name: Add Elasticsearch YUM repository
+  template:
+    src: elasticsearch.repo.j2
     dest: /etc/yum.repos.d/elasticsearch.repo
-    content: |
-      [elasticsearch-8.x]
-      name=Elasticsearch repository for 8.x packages
-      baseurl={{ elastic_repo_url }}
-      gpgcheck=1
-      gpgkey={{ elastic_gpg_key }}
-      enabled=1
-      priority=1
     owner: root
     group: root
     mode: '0644'
 
-- name: Import Elasticsearch GPG key
-  rpm_key:
-    key: "{{ elastic_gpg_key }}"
-    state: present
-
 - name: Install Elasticsearch
-  yum:
-    name: "elasticsearch={{ elastic_version }}"
+  dnf:
+    name: "{{ elasticsearch_package }}"
+    enablerepo: elasticsearch
     state: present
-    enablerepo: elasticsearch-8.x
-  notify: restart elasticsearch
 
-- name: Create Elasticsearch directories with proper permissions
-  file:
-    path: "{{ item.path }}"
-    state: directory
-    owner: "{{ elastic_user }}"
-    group: "{{ elastic_group }}"
-    mode: '0750'
-  loop:
-    - { path: /var/lib/elasticsearch }
-    - { path: /var/log/elasticsearch }
-    - { path: /etc/elasticsearch/jvm.options.d }
-    - { path: /usr/share/elasticsearch/logs }
-  notify: restart elasticsearch
-
-- name: Configure Elasticsearch
+- name: Deploy Elasticsearch configuration
   template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
-    owner: "{{ elastic_user }}"
-    group: "{{ elastic_group }}"
+    owner: root
+    group: elasticsearch
     mode: '0640'
   notify: restart elasticsearch
 
-- name: Set JVM Heap Size in custom options file
-  copy:
-    dest: "{{ elastic_jvm_options }}"
-    content: |
-      -Xms{{ elastic_heap_size }}
-      -Xmx{{ elastic_heap_size }}
-      -XX:+UseG1GC
-      -XX:G1ReservePercent=25
-      -XX:InitiatingHeapOccupancyPercent=30
-    owner: "{{ elastic_user }}"
-    group: "{{ elastic_group }}"
-    mode: '0640'
+- name: Reload systemd daemon
+  command: systemctl daemon-reload
   notify: restart elasticsearch
 
-- name: Set system limits for Elasticsearch user
-  lineinfile:
-    path: /etc/security/limits.conf
-    line: "{{ item }}"
-    state: present
-  loop:
-    - "{{ elastic_user }} soft nofile 65535"
-    - "{{ elastic_user }} hard nofile 65535"
-    - "{{ elastic_user }} soft memlock unlimited"
-    - "{{ elastic_user }} hard memlock unlimited"
-    - "{{ elastic_user }} soft nproc 4096"
-    - "{{ elastic_user }} hard nproc 4096"
-
-- name: Increase mmap counts for Elasticsearch
-  sysctl:
-    name: vm.max_map_count
-    value: "262144"
-    state: present
-    reload: yes
-
-- name: Verify Elasticsearch configuration
-  command: /usr/share/elasticsearch/bin/elasticsearch -d -p /tmp/elasticsearch-pid -q
-  args:
-    creates: /tmp/elasticsearch-pid
-  register: config_test
-  changed_when: false
-  ignore_errors: yes
-
-- name: Display configuration test results if failed
-  debug:
-    msg: "Configuration test failed: {{ config_test.stderr }}"
-  when: config_test.rc != 0
-
-- name: Clean up test PID file
-  file:
-    path: /tmp/elasticsearch-pid
-    state: absent
-  ignore_errors: yes
-
-- name: Fix permissions for Elasticsearch directories recursively
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ elastic_user }}"
-    group: "{{ elastic_group }}"
-    recurse: yes
-    mode: '0750'
-  loop:
-    - /etc/elasticsearch
-    - /var/lib/elasticsearch
-    - /var/log/elasticsearch
-    - /usr/share/elasticsearch
-  notify: restart elasticsearch
-
-- name: Enable and start Elasticsearch service with retries
+- name: Enable and start Elasticsearch service
   systemd:
-    name: elasticsearch
+    name: "{{ elasticsearch_service }}"
     enabled: true
     state: started
-    daemon_reload: yes
-  register: service_result
-  retries: 5
-  delay: 10
-  until: service_result is succeeded
 
-- name: Wait for Elasticsearch to become available
-  uri:
-    url: "http://localhost:{{ elastic_http_port }}/"
-    method: GET
-    status_code: 200
-    timeout: 30
-  register: es_health
-  retries: 10
-  delay: 5
-  until: es_health.status == 200
-  ignore_errors: yes
+---
+- name: Add Kibana YUM repository
+  template:
+    src: kibana.repo.j2
+    dest: /etc/yum.repos.d/kibana.repo
+    owner: root
+    group: root
+    mode: '0644'
 
-- name: Display Elasticsearch health status
-  debug:
-    msg: "Elasticsearch is running and healthy"
-  when: es_health.status == 200
+- name: Install Kibana
+  dnf:
+    name: kibana
+    state: present
 
-- name: Display Elasticsearch health check error
-  debug:
-    msg: "Elasticsearch health check failed: {{ es_health.msg }}"
-  when: es_health.status != 200
+- name: Deploy Kibana configuration
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    owner: root
+    group: kibana
+    mode: '0640'
+  notify: restart kibana
+
+- name: Reload systemd daemon
+  command: systemctl daemon-reload
+  notify: restart kibana
+
+- name: Enable and start Kibana service
+  systemd:
+    name: kibana
+    enabled: true
+    state: started
+
+---
+- name: Add Logstash Yum Repository
+  yum_repository:
+    name: "{{ logstash_repo_name }}"
+    description: "Elastic repository for 9.x packages"
+    baseurl: "{{ logstash_repo_baseurl }}"
+    gpgcheck: yes
+    gpgkey: "{{ logstash_repo_gpgkey }}"
+    enabled: yes
+
+- name: Install Logstash
+  dnf:
+    name: logstash
+    state: present
+
+- name: Deploy Logstash configuration
+  template:
+    src: logstash.conf.j2
+    dest: "{{ logstash_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Logstash
+
+- name: Enable and Start Logstash service
+  systemd:
+    name: "{{ logstash_service }}"
+    enabled: yes
+    state: started
+

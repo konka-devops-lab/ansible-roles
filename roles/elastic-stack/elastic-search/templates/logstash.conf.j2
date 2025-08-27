@@ -1,0 +1,12 @@
+input {
+  beats {
+    port => {{ logstash_beats_port }}
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["{{ logstash_es_host }}"]
+    index => "%{[@metadata][beat]}-%{[@metadata][version]}"
+  }
+}

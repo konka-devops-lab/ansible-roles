@@ -1,20 +1,15 @@
 ---
 - name: restart elasticsearch
   systemd:
-    name: elasticsearch
+    name: "{{ elasticsearch_service }}"
     state: restarted
-    daemon_reload: yes
-
-- name: reload systemd
+---
+- name: restart kibana
   systemd:
-    daemon_reload: yes
-
-- name: stop elasticsearch
+    name: kibana
+    state: restarted
+---
+- name: Restart Logstash
   systemd:
-    name: elasticsearch
-    state: stopped
-
-- name: start elasticsearch
-  systemd:
-    name: elasticsearch
-    state: started
+    name: logstash
+    state: restarted
