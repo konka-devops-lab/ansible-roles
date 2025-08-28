@@ -50,12 +50,12 @@
     shell: "{{ app_shell }}"
     create_home: no
 
-# - name: Clone backend repository
-#   git:
-#     repo: "{{ app_repo }}"
-#     dest: "{{ app_dir }}"
-#     update: yes
-#     version: main
+- name: Clone backend repository
+  git:
+    repo: "{{ app_repo }}"
+    dest: "{{ app_dir }}"
+    update: yes
+    version: main
 
 - name: Build backend application with Maven
   command: mvn install package
