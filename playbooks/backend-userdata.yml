@@ -1,7 +1,0 @@
-- name: Install Alertmanager locally
-  hosts: localhost
-  connection: local
-  become: true
-
-  roles:
-    - ../roles/backend-userdata

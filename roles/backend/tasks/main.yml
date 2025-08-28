@@ -1,0 +1,63 @@
+---
+- name: Install Java
+  yum:
+    name: "{{ java_package }}"
+    state: present
+
+- name: Install wget (if not already)
+  yum:
+    name: wget
+    state: present
+
+- name: Download Maven
+  get_url:
+    url: "{{ maven_url }}"
+    dest: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+    mode: '0644'
+
+- name: Extract Maven
+  unarchive:
+    src: "/tmp/apache-maven-{{ maven_version }}-bin.tar.gz"
+    dest: /opt
+    remote_src: yes
+
+- name: Rename Maven directory
+  command: mv /opt/apache-maven-{{ maven_version }} "{{ maven_install_dir }}"
+  args:
+    creates: "{{ maven_install_dir }}"
+
+- name: Set Maven environment variables
+  lineinfile:
+    path: /etc/profile.d/maven.sh
+    create: yes
+    line: "{{ item }}"
+    state: present
+  loop:
+    - "export M2_HOME={{ maven_install_dir }}"
+    - 'export PATH=$PATH:$M2_HOME/bin'
+  notify: Reload profile
+
+- name: Create app directory
+  file:
+    path: "{{ app_dir }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+
+- name: Create backend user
+  user:
+    name: "{{ app_user }}"
+    shell: "{{ app_shell }}"
+    create_home: no
+
+# - name: Clone backend repository
+#   git:
+#     repo: "{{ app_repo }}"
+#     dest: "{{ app_dir }}"
+#     update: yes
+#     version: main
+
+- name: Build backend application with Maven
+  command: mvn install package
+  args:
+    chdir: "{{ app_dir }}"
