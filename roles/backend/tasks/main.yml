@@ -37,6 +37,12 @@
     - 'export PATH=$PATH:$M2_HOME/bin'
   notify: Reload profile
 
+- name: Create backend user
+  user:
+    name: "{{ app_user }}"
+    shell: "{{ app_shell }}"
+    create_home: no
+
 - name: Create app directory
   file:
     path: "{{ app_dir }}"
