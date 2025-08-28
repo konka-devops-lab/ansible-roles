@@ -49,12 +49,7 @@
     state: directory
     owner: "{{ app_user }}"
     group: "{{ app_user }}"
-
-- name: Create backend user
-  user:
-    name: "{{ app_user }}"
-    shell: "{{ app_shell }}"
-    create_home: no
+    mode: '0755'
 
 - name: Clone backend repository
   git:
@@ -62,6 +57,9 @@
     dest: "{{ app_dir }}"
     update: yes
     version: main
+  become: yes
+  become_user: "{{ app_user }}"
+
 
 - name: Build backend application with Maven
   command: mvn install package
