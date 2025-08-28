@@ -1,9 +1,5 @@
 ---
 java_package: java-17-amazon-corretto-devel
-maven_version: "3.9.11"   # replace with actual version you want
-maven_url: "https://dlcdn.apache.org/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
-maven_install_dir: "/opt/maven"
 app_dir: "/app"
-app_repo: "https://github.com/konka-devops-lab/crud-backend.git"
 app_user: "expense"
 app_shell: "/sbin/nologin"
