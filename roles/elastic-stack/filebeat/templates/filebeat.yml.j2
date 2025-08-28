@@ -17,6 +17,9 @@ setup.template.settings:
 setup.kibana:
   #host: "localhost:5601"
 
+output.logstash:
+  hosts: ["dev-elasticstack.konkas.tech:5044"]
+
 {% if filebeat_output_type == "elasticsearch" %}
 output.elasticsearch:
   hosts: [{% for host in filebeat_elasticsearch_hosts %}"{{ host }}"{% if not loop.last %}, {% endif %}{% endfor %}]
