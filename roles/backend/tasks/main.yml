@@ -8,10 +8,20 @@
     name: "{{ app_user }}"
     shell: "{{ app_shell }}"
     create_home: no
-- name: Create app directory
+- name: Create /app directory with SGID
   file:
-    path: "{{ app_dir }}"
+    path: /app
     state: directory
     owner: "{{ app_user }}"
     group: "{{ app_user }}"
-    mode: '0755'
+    mode: '2775'   # SGID bit set (2 before 775)
+
+- name: Ensure default ACL for group ownership
+  acl:
+    path: /app
+    entity: "{{ app_user }}"
+    etype: group
+    permissions: rwx
+    default: yes
+    state: present
+
