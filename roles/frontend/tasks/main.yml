@@ -16,11 +16,4 @@
     path: "{{ nginx_html_dir }}"
     state: directory
     recurse: yes
-    
-- name: Deploy custom nginx.conf
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-    owner: root
-    group: root
-    mode: '0644'
+  

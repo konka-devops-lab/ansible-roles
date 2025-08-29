@@ -7,3 +7,4 @@
     - ../roles/frontend
     - ../roles/nginx-exporter
     - ../roles/node-exporter
+    - ../roles/elastic-stack/filebeat
