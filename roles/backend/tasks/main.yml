@@ -16,12 +16,14 @@
     group: "{{ app_user }}"
     mode: '2775'   # SGID bit set (2 before 775)
 
-- name: Ensure default ACL for group ownership
+- name: Ensure default ACL for user and group ownership
   acl:
     path: /app
     entity: "{{ app_user }}"
-    etype: group
+    etype: "{{ item }}"
     permissions: rwx
     default: yes
     state: present
-
+  loop:
+    - user
+    - group
