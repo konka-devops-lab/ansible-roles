@@ -16,7 +16,7 @@
     group: "{{ app_user }}"
     mode: '2775'   # SGID bit set (2 before 775)
 
-- name: Ensure default ACL for user and group ownership
+- name: Ensure default ACL for user and group ownership on /app
   acl:
     path: /app
     entity: "{{ app_user }}"
@@ -27,3 +27,18 @@
   loop:
     - user
     - group
+
+- name: Apply ACL for user and group on existing files in /app
+  acl:
+    path: /app
+    entity: "{{ app_user }}"
+    etype: "{{ item }}"
+    permissions: rwx
+    state: present
+  loop:
+    - user
+    - group
+
+- name: Apply ACL recursively to all existing files inside /app
+  command: >
+    setfacl -R -m u:{{ app_user }}:rwx,g:{{ app_user }}:rwx /app
