@@ -1,5 +1,5 @@
 ---
-- name: Install Nginx, Git and curl
+- name: Install Nginx
   package:
     name:
       - nginx
