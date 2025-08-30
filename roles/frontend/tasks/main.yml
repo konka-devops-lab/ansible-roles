@@ -11,10 +11,16 @@
     state: started
     enabled: yes
 
-- name: Remove all files in /usr/share/nginx/html
+- name: Find all files and folders inside /usr/share/nginx/html
+  find:
+    paths: /usr/share/nginx/html
+    file_type: any
+    recurse: yes
+  register: files_to_remove
+
+- name: Remove everything inside /usr/share/nginx/html
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - "/usr/share/nginx/html/*"
+  loop: "{{ files_to_remove.files }}"
   
