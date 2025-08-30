@@ -6,5 +6,5 @@ filebeat_config_path: "/etc/filebeat/filebeat.yml"
 filebeat_logs_path: "/var/log/*.log"
 filebeat_elasticsearch_hosts: ["localhost:9200"]
 filebeat_modules_enabled: false
-filebeat_output_type: "elasticsearch"  # can be "logstash" if needed
-filebeat_logstash_hosts: ["localhost:5044"]
+filebeat_output_type: "logstash" # can be "logstash/elasticsearch" if needed
+filebeat_logstash_hosts: ["dev-elasticstack.konkas.tech:5044"]
