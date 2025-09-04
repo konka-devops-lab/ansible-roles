@@ -1,0 +1,29 @@
+---
+- name: Add Logstash Yum Repository
+  yum_repository:
+    name: "{{ logstash_repo_name }}"
+    description: "Elastic repository for 9.x packages"
+    baseurl: "{{ logstash_repo_baseurl }}"
+    gpgcheck: yes
+    gpgkey: "{{ logstash_repo_gpgkey }}"
+    enabled: yes
+
+- name: Install Logstash
+  dnf:
+    name: logstash
+    state: present
+
+- name: Deploy Logstash configuration
+  template:
+    src: logstash.conf.j2
+    dest: "{{ logstash_conf_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Logstash
+
+- name: Enable and Start Logstash service
+  systemd:
+    name: "{{ logstash_service }}"
+    enabled: yes
+    state: started

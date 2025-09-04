@@ -1,0 +1,18 @@
+server.port: {{ kibana_config.server_port }}
+server.host: "{{ kibana_config.server_host }}"
+
+elasticsearch.hosts: {{ kibana_config.elasticsearch_hosts }}
+
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: {{ kibana_config.logging_file }}
+      layout:
+        type: json
+  root:
+    appenders:
+      - default
+      - file
+
+pid.file: {{ kibana_config.pid_file }}

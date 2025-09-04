@@ -1,0 +1,6 @@
+kibana_config:
+  server_port: 5601
+  server_host: "0.0.0.0"
+  elasticsearch_hosts: ["http://localhost:9200"]
+  logging_file: "/var/log/kibana/kibana.log"
+  pid_file: "/run/kibana/kibana.pid"

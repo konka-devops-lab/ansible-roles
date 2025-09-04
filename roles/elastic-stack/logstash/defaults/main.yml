@@ -1,0 +1,7 @@
+logstash_repo_name: "logstash-9.x"
+logstash_repo_baseurl: "https://artifacts.elastic.co/packages/9.x/yum"
+logstash_repo_gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+logstash_conf_path: "/etc/logstash/conf.d/logstash.conf"
+logstash_service: "logstash"
+logstash_beats_port: 5044
+logstash_es_host: "http://localhost:9200"
