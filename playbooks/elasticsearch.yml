@@ -1,8 +1,0 @@
-- name: Elasticsearch Setup
-  hosts: localhost
-  become: yes
-  roles:
-    - role: ../roles/elastic-stack/elastic-search
-    - role: ../roles/elastic-stack/logstash
-    - role: ../roles/elastic-stack/kibana
-    - role: ../roles/elastic-stack/filebeat

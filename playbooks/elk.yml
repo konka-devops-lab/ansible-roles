@@ -1,0 +1,6 @@
+- name: Elasticsearch Setup
+  hosts: localhost
+  become: yes
+  roles:
+    - role: ../roles/elk/elastic-search
+    - role: ../roles/elk/filebeat
