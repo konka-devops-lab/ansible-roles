@@ -3,12 +3,10 @@
   systemd:
     name: "{{ elasticsearch_service }}"
     state: restarted
----
 - name: restart kibana
   systemd:
     name: kibana
     state: restarted
----
 - name: Restart Logstash
   systemd:
     name: logstash
