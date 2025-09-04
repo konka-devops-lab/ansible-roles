@@ -32,7 +32,6 @@
     enabled: true
     state: started
 
----
 - name: Add Kibana YUM repository
   template:
     src: kibana.repo.j2
@@ -65,7 +64,6 @@
     enabled: true
     state: started
 
----
 - name: Add Logstash Yum Repository
   yum_repository:
     name: "{{ logstash_repo_name }}"
