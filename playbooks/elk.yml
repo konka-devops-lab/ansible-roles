@@ -2,5 +2,5 @@
   hosts: localhost
   become: yes
   roles:
-    - role: ../roles/elk/elastic-search
+    - role: ../roles/elk/elk
     - role: ../roles/elk/filebeat
