@@ -35,10 +35,19 @@
   set_fact:
     nexus_dir: "{{ nexus_files.files[0].split('/')[0] }}"
 
+- name: Remove old Nexus directory if exists
+  file:
+    path: "{{ nexus_install_dir }}/{{ nexus_dir }}"
+    state: absent
+
 - name: Move Nexus files to installation directory
   command: mv "{{ nexus_tmp_dir }}/{{ nexus_dir }}" "{{ nexus_install_dir }}/"
-  args:
-    removes: "{{ nexus_tmp_dir }}/{{ nexus_dir }}"
+
+
+# - name: Move Nexus files to installation directory
+#   command: mv "{{ nexus_tmp_dir }}/{{ nexus_dir }}" "{{ nexus_install_dir }}/"
+#   args:
+#     removes: "{{ nexus_tmp_dir }}/{{ nexus_dir }}"
 
 - name: Create Nexus user
   user:
