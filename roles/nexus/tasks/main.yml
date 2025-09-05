@@ -1,3 +1,4 @@
+---
 - name: Install Java
   yum:
     name: "{{ java_package }}"
@@ -23,14 +24,14 @@
     dest: "{{ nexus_tmp_dir }}"
     remote_src: yes
 
-- name: List files in tar archive
+- name: List files in Nexus tarball
   unarchive:
     src: "{{ nexus_tmp_dir }}/nexus.tar.gz"
     dest: "{{ nexus_tmp_dir }}"
     list_files: yes
   register: nexus_files
 
-- name: Set Nexus directory name
+- name: Set Nexus directory name dynamically
   set_fact:
     nexus_dir: "{{ nexus_files.files[0].split('/')[0] }}"
 
@@ -42,7 +43,7 @@
 - name: Create Nexus user
   user:
     name: "{{ nexus_user }}"
-    shell: /bin/bash
+    shell: /bin/bash"
 
 - name: Set ownership for Nexus directory
   file:
