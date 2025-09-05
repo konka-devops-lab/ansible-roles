@@ -1,11 +1,10 @@
----
 - name: Install Java
-  ansible.builtin.yum:
+  yum:
     name: "{{ java_package }}"
     state: present
 
 - name: Create Nexus directories
-  ansible.builtin.file:
+  file:
     path: "{{ item }}"
     state: directory
     mode: '0755'
@@ -14,20 +13,20 @@
     - "{{ nexus_install_dir }}"
 
 - name: Download Nexus tarball
-  ansible.builtin.get_url:
+  get_url:
     url: "{{ nexus_url }}"
     dest: "{{ nexus_tmp_dir }}/nexus.tar.gz"
 
 - name: Extract Nexus archive
-  ansible.builtin.unarchive:
+  unarchive:
     src: "{{ nexus_tmp_dir }}/nexus.tar.gz"
     dest: "{{ nexus_tmp_dir }}"
     remote_src: yes
 
 - name: List files in tar archive
   unarchive:
-    src: /tmp/nexus/nexus.tar.gz
-    dest: /tmp/nexus
+    src: "{{ nexus_tmp_dir }}/nexus.tar.gz"
+    dest: "{{ nexus_tmp_dir }}"
     list_files: yes
   register: nexus_files
 
@@ -36,43 +35,40 @@
     nexus_dir: "{{ nexus_files.files[0].split('/')[0] }}"
 
 - name: Move Nexus files to installation directory
-  ansible.builtin.copy:
-    src: "{{ nexus_tmp_dir }}/{{ nexus_dir_name.stdout }}"
-    dest: "{{ nexus_install_dir }}/"
-    remote_src: yes
-    owner: "{{ nexus_user }}"
-    group: "{{ nexus_user }}"
+  command: mv "{{ nexus_tmp_dir }}/{{ nexus_dir }}" "{{ nexus_install_dir }}/"
+  args:
+    removes: "{{ nexus_tmp_dir }}/{{ nexus_dir }}"
 
 - name: Create Nexus user
-  ansible.builtin.user:
+  user:
     name: "{{ nexus_user }}"
     shell: /bin/bash
 
 - name: Set ownership for Nexus directory
-  ansible.builtin.file:
+  file:
     path: "{{ nexus_install_dir }}"
     owner: "{{ nexus_user }}"
     group: "{{ nexus_user }}"
     recurse: yes
 
 - name: Configure nexus.rc file
-  ansible.builtin.lineinfile:
-    path: "{{ nexus_install_dir }}/{{ nexus_dir_name.stdout }}/bin/nexus.rc"
+  lineinfile:
+    path: "{{ nexus_install_dir }}/{{ nexus_dir }}/bin/nexus.rc"
     line: 'run_as_user="{{ nexus_user }}"'
     create: yes
 
 - name: Create systemd service file for Nexus
-  ansible.builtin.template:
+  template:
     src: nexus.service.j2
     dest: "{{ service_file }}"
     mode: '0644'
 
 - name: Reload systemd
-  ansible.builtin.systemd:
+  systemd:
     daemon_reload: yes
 
 - name: Enable and start Nexus service
-  ansible.builtin.systemd:
+  systemd:
     name: nexus
     state: started
     enabled: yes
