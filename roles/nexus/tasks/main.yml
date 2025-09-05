@@ -1,0 +1,72 @@
+---
+- name: Install Java
+  ansible.builtin.yum:
+    name: "{{ java_package }}"
+    state: present
+
+- name: Create Nexus directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ nexus_tmp_dir }}"
+    - "{{ nexus_install_dir }}"
+
+- name: Download Nexus tarball
+  ansible.builtin.get_url:
+    url: "{{ nexus_url }}"
+    dest: "{{ nexus_tmp_dir }}/nexus.tar.gz"
+
+- name: Extract Nexus archive
+  ansible.builtin.unarchive:
+    src: "{{ nexus_tmp_dir }}/nexus.tar.gz"
+    dest: "{{ nexus_tmp_dir }}"
+    remote_src: yes
+
+- name: Find Nexus extracted directory name
+  ansible.builtin.command: "tar -tf {{ nexus_tmp_dir }}/nexus.tar.gz | head -1 | cut -d '/' -f1"
+  register: nexus_dir_name
+  changed_when: false
+
+- name: Move Nexus files to installation directory
+  ansible.builtin.copy:
+    src: "{{ nexus_tmp_dir }}/{{ nexus_dir_name.stdout }}"
+    dest: "{{ nexus_install_dir }}/"
+    remote_src: yes
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_user }}"
+
+- name: Create Nexus user
+  ansible.builtin.user:
+    name: "{{ nexus_user }}"
+    shell: /bin/bash
+
+- name: Set ownership for Nexus directory
+  ansible.builtin.file:
+    path: "{{ nexus_install_dir }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_user }}"
+    recurse: yes
+
+- name: Configure nexus.rc file
+  ansible.builtin.lineinfile:
+    path: "{{ nexus_install_dir }}/{{ nexus_dir_name.stdout }}/bin/nexus.rc"
+    line: 'run_as_user="{{ nexus_user }}"'
+    create: yes
+
+- name: Create systemd service file for Nexus
+  ansible.builtin.template:
+    src: nexus.service.j2
+    dest: "{{ service_file }}"
+    mode: '0644'
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Enable and start Nexus service
+  ansible.builtin.systemd:
+    name: nexus
+    state: started
+    enabled: yes
