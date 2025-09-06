@@ -1,12 +1,13 @@
 [Unit]
 Description=SonarQube service
-After=network.target
+After=syslog.target network.target
 
 [Service]
 Type=forking
-User={{ sonar_user }}
 ExecStart={{ sonar_install_dir }}/bin/linux-x86-64/sonar.sh start
 ExecStop={{ sonar_install_dir }}/bin/linux-x86-64/sonar.sh stop
+User={{ sonar_user }}
+Group={{ sonar_user }}
 Restart=always
 LimitNOFILE=65536
 
