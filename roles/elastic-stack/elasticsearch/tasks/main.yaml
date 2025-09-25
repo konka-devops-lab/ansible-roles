@@ -22,11 +22,19 @@
     mode: '0640'
   notify: Restart Elasticsearch
 
-- name: Set JVM heap size
+- name: Configure JVM heap size
   lineinfile:
     path: /etc/elasticsearch/jvm.options.d/heap.options
     create: yes
     line: "-Xms{{ elasticsearch_heap_size }}"
+  notify: Restart Elasticsearch
+
+- name: Configure ES_JAVA_OPTS (optional env var)
+  lineinfile:
+    path: /etc/sysconfig/elasticsearch
+    regexp: '^ES_JAVA_OPTS='
+    line: 'ES_JAVA_OPTS="-Xms{{ elasticsearch_heap_size }} -Xmx{{ elasticsearch_heap_size }}"'
+    create: yes
   notify: Restart Elasticsearch
 
 - name: Ensure Elasticsearch service is enabled and started
