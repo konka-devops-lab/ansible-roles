@@ -13,6 +13,13 @@
     name: elasticsearch
     state: present
 
+- name: Clean up invalid sysconfig entries (fix for the error)
+  lineinfile:
+    path: /etc/sysconfig/elasticsearch
+    regex: "^(discovery\\.type|xpack\\.security\\.enabled)="
+    state: absent
+  notify: Restart Elasticsearch
+
 - name: Configure elasticsearch.yml
   template:
     src: elasticsearch.yml.j2
