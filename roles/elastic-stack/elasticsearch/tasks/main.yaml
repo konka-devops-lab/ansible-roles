@@ -1,43 +1,36 @@
 ---
 - name: Add Elasticsearch YUM repository
-  ansible.builtin.yum_repository:
-    name: "{{ es_rpm_repo_name }}"
-    description: "{{ es_rpm_repo_description }}"
-    baseurl: "{{ es_rpm_repo_baseurl }}"
-    gpgkey: "{{ es_rpm_repo_gpgkey }}"
-    enabled: "{{ (es_rpm_repo_enabled | bool) | ternary(1,0) }}"
-    gpgcheck: 1
-
-- name: Install Elasticsearch (enable repo for this install)
-  ansible.builtin.dnf:
+  yum_repository:
     name: elasticsearch
-    enablerepo: "{{ es_rpm_repo_name }}"
-    state: present
-  notify: restart elasticsearch
+    description: "Elasticsearch repository for 9.x packages"
+    baseurl: "{{ elasticsearch_repo_url }}"
+    gpgcheck: yes
+    gpgkey: "{{ elasticsearch_gpg_key }}"
+    enabled: yes
 
-- name: Template elasticsearch.yml
-  ansible.builtin.template:
+- name: Install Elasticsearch
+  yum:
+    name: elasticsearch
+    state: present
+
+- name: Configure elasticsearch.yml
+  template:
     src: elasticsearch.yml.j2
     dest: /etc/elasticsearch/elasticsearch.yml
-    owner: elasticsearch
-    group: elasticsearch
-    mode: '0644'
-  notify: restart elasticsearch
-
-- name: Configure environment variables for systemd
-  ansible.builtin.copy:
-    dest: /etc/sysconfig/elasticsearch
-    content: |
-      {% for key, val in es_env_vars.items() %}
-      {{ key }}={{ val }}
-      {% endfor %}
     owner: root
-    group: root
-    mode: '0644'
-  notify: restart elasticsearch
+    group: elasticsearch
+    mode: '0640'
+  notify: Restart Elasticsearch
 
-- name: Enable and start Elasticsearch service
-  ansible.builtin.systemd:
+- name: Set JVM heap size
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options.d/heap.options
+    create: yes
+    line: "-Xms{{ elasticsearch_heap_size }}"
+  notify: Restart Elasticsearch
+
+- name: Ensure Elasticsearch service is enabled and started
+  systemd:
     name: elasticsearch
-    enabled: true
+    enabled: yes
     state: started
