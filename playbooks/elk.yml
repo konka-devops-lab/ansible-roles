@@ -3,6 +3,10 @@
   become: yes
   roles:
     - role: ../roles/elastic-stack/elasticsearch
+    - role: ../roles/elastic-stack/kibana
+    - role: ../roles/elastic-stack/logstash
+    
+#    - role: ../roles/elastic-stack/filebeat
     # - role: ../roles/elastic-stack/filebeat
 
 # ---
