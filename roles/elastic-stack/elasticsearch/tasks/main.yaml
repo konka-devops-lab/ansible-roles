@@ -19,13 +19,18 @@
     regex: "^(discovery\\.type|xpack\\.security\\.enabled)="
     state: absent
 
-- name: Set heap size via sysconfig (simplest method)
+- name: Set heap size via sysconfig
   lineinfile:
     path: /etc/sysconfig/elasticsearch
     regex: "^ES_JAVA_OPTS="
     line: 'ES_JAVA_OPTS="-Xms{{ elasticsearch_heap_size }} -Xmx{{ elasticsearch_heap_size }}"'
     create: yes
   notify: Restart Elasticsearch
+
+- name: Remove duplicate elasticsearch.yml if exists
+  file:
+    path: /etc/elasticsearch/elasticsearch.yml
+    state: absent
 
 - name: Configure elasticsearch.yml
   template:

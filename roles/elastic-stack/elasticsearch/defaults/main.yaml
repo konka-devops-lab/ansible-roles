@@ -5,5 +5,4 @@ elasticsearch_heap_size: "1g"
 elasticsearch_settings:
   discovery.type: "single-node"
   xpack.security.enabled: false
-  network.host: 0.0.0.0
   http.port: 9200
