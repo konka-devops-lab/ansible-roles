@@ -1,0 +1,22 @@
+---
+# Elasticsearch repo info
+es_rpm_repo_name: "elasticsearch"
+es_rpm_repo_description: "Elasticsearch repository for 9.x packages"
+es_rpm_repo_baseurl: "https://artifacts.elastic.co/packages/9.x/yum"
+es_rpm_repo_gpgkey: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+es_rpm_repo_enabled: false
+
+# JVM heap size
+es_java_opts: "-Xms1g -Xmx1g"
+
+# Elasticsearch config
+es_cluster_name: "es-cluster"
+es_node_name: "{{ inventory_hostname }}"
+es_network_host: "0.0.0.0"
+es_http_port: 9200
+
+# Environment variables
+es_env_vars:
+  discovery.type: "single-node"
+  xpack.security.enabled: "false"
+  ES_JAVA_OPTS: "{{ es_java_opts }}"
