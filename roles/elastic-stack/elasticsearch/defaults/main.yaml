@@ -2,7 +2,6 @@ elasticsearch_repo_url: "https://artifacts.elastic.co/packages/9.x/yum"
 elasticsearch_gpg_key: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
 elasticsearch_heap_size: "1g"
 
-# ES config options (go into elasticsearch.yml)
 elasticsearch_settings:
   discovery.type: "single-node"
   xpack.security.enabled: false
