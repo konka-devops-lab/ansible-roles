@@ -13,11 +13,18 @@
     name: elasticsearch
     state: present
 
-- name: Clean up invalid sysconfig entries (fix for the error)
+- name: Clean up invalid sysconfig entries
   lineinfile:
     path: /etc/sysconfig/elasticsearch
     regex: "^(discovery\\.type|xpack\\.security\\.enabled)="
     state: absent
+
+- name: Set heap size via sysconfig (simplest method)
+  lineinfile:
+    path: /etc/sysconfig/elasticsearch
+    regex: "^ES_JAVA_OPTS="
+    line: 'ES_JAVA_OPTS="-Xms{{ elasticsearch_heap_size }} -Xmx{{ elasticsearch_heap_size }}"'
+    create: yes
   notify: Restart Elasticsearch
 
 - name: Configure elasticsearch.yml
@@ -27,13 +34,6 @@
     owner: root
     group: elasticsearch
     mode: '0640'
-  notify: Restart Elasticsearch
-
-- name: Configure JVM heap size
-  lineinfile:
-    path: /etc/elasticsearch/jvm.options.d/heap.options
-    create: yes
-    line: "-Xms{{ elasticsearch_heap_size }} -Xmx{{ elasticsearch_heap_size }}"
   notify: Restart Elasticsearch
 
 - name: Ensure Elasticsearch service is enabled and started
