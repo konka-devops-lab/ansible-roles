@@ -1,47 +1,31 @@
 ---
-- name: Add Elasticsearch YUM repository
-  yum_repository:
-    name: elasticsearch
-    description: "Elasticsearch repository for 9.x packages"
-    baseurl: "{{ elasticsearch_repo_url }}"
-    gpgcheck: yes
-    gpgkey: "{{ elasticsearch_gpg_key }}"
-    enabled: yes
+- name: Copy Elasticsearch repo
+  copy:
+    src: elasticsearch.repo
+    dest: /etc/yum.repos.d/elasticsearch.repo
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: Install Elasticsearch
-  yum:
+  dnf:
     name: elasticsearch
+    enablerepo: elasticsearch
     state: present
 
-- name: Clean up invalid sysconfig entries
+- name: Set xpack.security.enabled to false
   lineinfile:
-    path: /etc/sysconfig/elasticsearch
-    regex: "^(discovery\\.type|xpack\\.security\\.enabled)="
-    state: absent
-
-- name: Set heap size via sysconfig
-  lineinfile:
-    path: /etc/sysconfig/elasticsearch
-    regex: "^ES_JAVA_OPTS="
-    line: 'ES_JAVA_OPTS="-Xms{{ elasticsearch_heap_size }} -Xmx{{ elasticsearch_heap_size }}"'
-    create: yes
-  notify: Restart Elasticsearch
-
-- name: Remove duplicate elasticsearch.yml if exists
-  file:
     path: /etc/elasticsearch/elasticsearch.yml
-    state: absent
-
-- name: Configure elasticsearch.yml
-  template:
-    src: elasticsearch.yml.j2
-    dest: /etc/elasticsearch/elasticsearch.yml
-    owner: root
-    group: elasticsearch
-    mode: '0640'
+    regexp: '^xpack.security.enabled:.*'
+    line: 'xpack.security.enabled: false'
+    create: yes
+    backup: yes
   notify: Restart Elasticsearch
 
-- name: Ensure Elasticsearch service is enabled and started
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and start Elasticsearch
   systemd:
     name: elasticsearch
     enabled: yes
